@@ -28,7 +28,7 @@ namespace my_std {
             void reserve(const size_t new_cap);
 
             inline bool empty() const noexcept { return m_size == 0; }
-            inline size_t size() const  noexcept { return m_size; }
+            inline size_t size() const noexcept { return m_size; }
             inline size_t capacity() const noexcept { return m_capacity; }
             inline size_t max_size() const noexcept { return std::numeric_limits<size_t>::max(); }
 
