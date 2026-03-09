@@ -2,31 +2,51 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <initializer_list>
 #include <limits>
 #include <stdexcept>
+#include <utility>
 
 namespace my_std {
 
     template<typename T>
     class Vector {
         public:
+            using iterator = T*;
+            using const_iterator = const T*;
+
             Vector() = default;
+            Vector(std::initializer_list<T> init);
 
             void push_back(const T& value);
-            void pop_back();
+            void push_back(T&& value);
+            template<typename... Args>
+            void emplace_back(Args&&... args);
+            void pop_back() noexcept;
 
-            inline void clear() { m_size = 0; } 
+            inline void clear() noexcept { m_size = 0; } 
             void reserve(const size_t new_cap);
 
-            inline bool empty() const { return m_size == 0; }
-            inline size_t size() const { return m_size; }
-            inline size_t capacity() const { return m_capacity; }
-            inline size_t max_size() const { return std::numeric_limits<size_t>::max(); }
+            inline bool empty() const noexcept { return m_size == 0; }
+            inline size_t size() const  noexcept { return m_size; }
+            inline size_t capacity() const noexcept { return m_capacity; }
+            inline size_t max_size() const noexcept { return std::numeric_limits<size_t>::max(); }
 
-            T& operator[](const size_t index) { return m_data[index]; }
-            const T& operator[](const size_t index) const { return m_data[index]; }
+            inline iterator begin() noexcept { return m_data; }
+            inline iterator end() noexcept { return m_data + m_size; }
+            inline const_iterator begin() const noexcept { return m_data; }
+            inline const_iterator end() const noexcept { return m_data + m_size; }
+            inline const_iterator cbegin() const noexcept { return m_data; }
+            inline const_iterator cend() const noexcept { return m_data + m_size; }
+
+            T& operator[](const size_t index) noexcept { return m_data[index]; }
+            const T& operator[](const size_t index) const noexcept { return m_data[index]; }
             T& at(const size_t index);
             const T& at(const size_t index) const;
+            T& front() noexcept { return m_data[0]; }
+            const T& front() const noexcept { return m_data[0]; }
+            T& back() noexcept { return m_data[m_size - 1]; }
+            const T& back() const noexcept { return m_data[m_size - 1]; }
 
             Vector(const Vector& other);
             Vector& operator=(const Vector& other);
@@ -44,6 +64,14 @@ namespace my_std {
     };
 
     template<typename T>
+    Vector<T>::Vector(std::initializer_list<T> init)
+        : m_data(init.size() ? new T[init.size()] : nullptr),
+          m_size(init.size()),
+          m_capacity(init.size()) {
+        std::copy(init.begin(), init.end(), m_data);
+    }
+
+    template<typename T>
     void Vector<T>::push_back(const T& value) {
         if (m_size >= m_capacity) {
             reserve(m_capacity == 0 ? m_INIT_CAP : m_capacity * 2);
@@ -53,7 +81,26 @@ namespace my_std {
     }
 
     template<typename T>
-    void Vector<T>::pop_back() {
+    void Vector<T>::push_back(T&& value) {
+        if (m_size >= m_capacity) {
+            reserve(m_capacity == 0 ? m_INIT_CAP : m_capacity * 2);
+        }
+
+        m_data[m_size++] = std::move(value);
+    }
+
+    template<typename T>
+    template<typename... Args>
+    void Vector<T>::emplace_back(Args&&... args) {
+        if (m_size >= m_capacity) {
+            reserve(m_capacity == 0 ? m_INIT_CAP : m_capacity * 2);
+        }
+
+        m_data[m_size++] = T(std::forward<Args>(args)...);
+    }
+
+    template<typename T>
+    void Vector<T>::pop_back() noexcept {
         if (m_size > 0) --m_size;
     }
 

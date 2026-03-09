@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <Vector.h>
+#include <algorithm>
 #include <string>
 
 TEST(VectorTest, DefaultConstructorIsEmpty) {
@@ -211,4 +212,188 @@ TEST(VectorTest, CapacityGrowsOnPushBack) {
         v.push_back(static_cast<int>(i));
     }
     EXPECT_GT(v.capacity(), cap); // should have grown
+}
+
+struct Point {
+    int x, y;
+    Point() : x(0), y(0) {}
+    Point(int x, int y) : x(x), y(y) {}
+};
+
+TEST(VectorTest, EmplaceBackConstructsInPlace) {
+    my_std::Vector<Point> v;
+    v.emplace_back(3, 4);
+    EXPECT_EQ(v.size(), 1);
+    EXPECT_EQ(v[0].x, 3);
+    EXPECT_EQ(v[0].y, 4);
+}
+
+TEST(VectorTest, EmplaceBackMultiple) {
+    my_std::Vector<Point> v;
+    v.emplace_back(1, 2);
+    v.emplace_back(3, 4);
+    v.emplace_back(5, 6);
+    EXPECT_EQ(v.size(), 3);
+    EXPECT_EQ(v[2].x, 5);
+    EXPECT_EQ(v[2].y, 6);
+}
+
+TEST(VectorTest, EmplaceBackWithString) {
+    my_std::Vector<std::string> v;
+    v.emplace_back(5, 'a'); // string(5, 'a') -> "aaaaa"
+    EXPECT_EQ(v.size(), 1);
+    EXPECT_EQ(v[0], "aaaaa");
+}
+
+TEST(VectorTest, EmplaceBackGrowsPastCapacity) {
+    my_std::Vector<Point> v;
+    for (int i = 0; i < 25; ++i) {
+        v.emplace_back(i, i * 10);
+    }
+    EXPECT_EQ(v.size(), 25);
+    EXPECT_EQ(v[24].x, 24);
+    EXPECT_EQ(v[24].y, 240);
+}
+
+TEST(VectorTest, EmplaceBackSingleArg) {
+    my_std::Vector<int> v;
+    v.emplace_back(42);
+    EXPECT_EQ(v.size(), 1);
+    EXPECT_EQ(v[0], 42);
+}
+
+TEST(VectorTest, BeginEnd) {
+    my_std::Vector<int> v;
+    v.push_back(1);
+    v.push_back(2);
+    v.push_back(3);
+
+    int sum = 0;
+    for (auto it = v.begin(); it != v.end(); ++it) {
+        sum += *it;
+    }
+    EXPECT_EQ(sum, 6);
+}
+
+TEST(VectorTest, RangeBasedFor) {
+    my_std::Vector<int> v;
+    v.push_back(10);
+    v.push_back(20);
+    v.push_back(30);
+
+    int sum = 0;
+    for (auto& x : v) {
+        sum += x;
+    }
+    EXPECT_EQ(sum, 60);
+}
+
+TEST(VectorTest, ConstIterators) {
+    my_std::Vector<int> v;
+    v.push_back(1);
+    v.push_back(2);
+    const auto& cv = v;
+
+    int sum = 0;
+    for (auto it = cv.begin(); it != cv.end(); ++it) {
+        sum += *it;
+    }
+    EXPECT_EQ(sum, 3);
+}
+
+TEST(VectorTest, CBeginCEnd) {
+    my_std::Vector<int> v;
+    v.push_back(5);
+    EXPECT_EQ(*v.cbegin(), 5);
+    EXPECT_EQ(v.cend() - v.cbegin(), 1);
+}
+
+TEST(VectorTest, EmptyIterators) {
+    my_std::Vector<int> v;
+    EXPECT_EQ(v.begin(), v.end());
+}
+
+TEST(VectorTest, StdAlgorithmSort) {
+    my_std::Vector<int> v;
+    v.push_back(3);
+    v.push_back(1);
+    v.push_back(2);
+    std::sort(v.begin(), v.end());
+    EXPECT_EQ(v[0], 1);
+    EXPECT_EQ(v[1], 2);
+    EXPECT_EQ(v[2], 3);
+}
+
+TEST(VectorTest, StdAlgorithmFind) {
+    my_std::Vector<int> v;
+    v.push_back(10);
+    v.push_back(20);
+    v.push_back(30);
+    auto it = std::find(v.begin(), v.end(), 20);
+    EXPECT_NE(it, v.end());
+    EXPECT_EQ(*it, 20);
+
+    auto miss = std::find(v.begin(), v.end(), 99);
+    EXPECT_EQ(miss, v.end());
+}
+
+TEST(VectorTest, Front) {
+    my_std::Vector<int> v;
+    v.push_back(1);
+    v.push_back(2);
+    EXPECT_EQ(v.front(), 1);
+    v.front() = 99;
+    EXPECT_EQ(v[0], 99);
+}
+
+TEST(VectorTest, Back) {
+    my_std::Vector<int> v;
+    v.push_back(1);
+    v.push_back(2);
+    EXPECT_EQ(v.back(), 2);
+    v.back() = 99;
+    EXPECT_EQ(v[1], 99);
+}
+
+TEST(VectorTest, ConstFrontBack) {
+    my_std::Vector<int> v;
+    v.push_back(10);
+    v.push_back(20);
+    const auto& cv = v;
+    EXPECT_EQ(cv.front(), 10);
+    EXPECT_EQ(cv.back(), 20);
+}
+
+TEST(VectorTest, PushBackMove) {
+    my_std::Vector<std::string> v;
+    std::string s = "hello";
+    v.push_back(std::move(s));
+    EXPECT_EQ(v[0], "hello");
+    EXPECT_TRUE(s.empty()); // moved-from string should be empty
+}
+
+TEST(VectorTest, InitializerListConstructor) {
+    my_std::Vector<int> v = {1, 2, 3, 4, 5};
+    EXPECT_EQ(v.size(), 5);
+    EXPECT_EQ(v[0], 1);
+    EXPECT_EQ(v[4], 5);
+}
+
+TEST(VectorTest, InitializerListEmpty) {
+    my_std::Vector<int> v = {};
+    EXPECT_TRUE(v.empty());
+}
+
+TEST(VectorTest, InitializerListStrings) {
+    my_std::Vector<std::string> v = {"hello", "world"};
+    EXPECT_EQ(v.size(), 2);
+    EXPECT_EQ(v[0], "hello");
+    EXPECT_EQ(v[1], "world");
+}
+
+TEST(VectorTest, InitializerListThenPushBack) {
+    my_std::Vector<int> v = {1, 2};
+    v.push_back(3);
+    EXPECT_EQ(v.size(), 3);
+    EXPECT_EQ(v[2], 3);
 }
