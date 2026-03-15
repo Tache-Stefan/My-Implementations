@@ -19,7 +19,11 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-add_executable(tests tests/Vector_test.cpp tests/Ring_Buffer_test.cpp tests/Array_test.cpp)
+add_executable(tests
+    tests/Vector_test.cpp 
+    tests/Ring_Buffer_test.cpp 
+    tests/Array_test.cpp
+    tests/List_test.cpp)
 target_link_libraries(tests PRIVATE MyImplementations GTest::gtest_main)
 
 include(GoogleTest)
