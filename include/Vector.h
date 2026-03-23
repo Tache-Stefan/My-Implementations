@@ -11,56 +11,56 @@ namespace my_std {
 
     template<typename T>
     class Vector {
-        public:
-            using iterator = T*;
-            using const_iterator = const T*;
+    public:
+        using iterator = T*;
+        using const_iterator = const T*;
 
-            Vector() = default;
-            Vector(std::initializer_list<T> init);
+        Vector() = default;
+        Vector(std::initializer_list<T> init);
 
-            void push_back(const T& value);
-            void push_back(T&& value);
-            template<typename... Args>
-            void emplace_back(Args&&... args);
-            void pop_back() noexcept;
+        void push_back(const T& value);
+        void push_back(T&& value);
+        template<typename... Args>
+        void emplace_back(Args&&... args);
+        void pop_back() noexcept;
 
-            inline void clear() noexcept { m_size = 0; } 
-            void reserve(const size_t new_cap);
+        inline void clear() noexcept { m_size = 0; } 
+        void reserve(const size_t new_cap);
 
-            inline bool empty() const noexcept { return m_size == 0; }
-            inline size_t size() const noexcept { return m_size; }
-            inline size_t capacity() const noexcept { return m_capacity; }
-            inline size_t max_size() const noexcept { return std::numeric_limits<size_t>::max(); }
+        inline bool empty() const noexcept { return m_size == 0; }
+        inline size_t size() const noexcept { return m_size; }
+        inline size_t capacity() const noexcept { return m_capacity; }
+        inline size_t max_size() const noexcept { return std::numeric_limits<size_t>::max(); }
 
-            inline iterator begin() noexcept { return m_data; }
-            inline iterator end() noexcept { return m_data + m_size; }
-            inline const_iterator begin() const noexcept { return m_data; }
-            inline const_iterator end() const noexcept { return m_data + m_size; }
-            inline const_iterator cbegin() const noexcept { return m_data; }
-            inline const_iterator cend() const noexcept { return m_data + m_size; }
+        inline iterator begin() noexcept { return m_data; }
+        inline iterator end() noexcept { return m_data + m_size; }
+        inline const_iterator begin() const noexcept { return m_data; }
+        inline const_iterator end() const noexcept { return m_data + m_size; }
+        inline const_iterator cbegin() const noexcept { return m_data; }
+        inline const_iterator cend() const noexcept { return m_data + m_size; }
 
-            T& operator[](const size_t index) noexcept { return m_data[index]; }
-            const T& operator[](const size_t index) const noexcept { return m_data[index]; }
-            T& at(const size_t index);
-            const T& at(const size_t index) const;
-            T& front() noexcept { return m_data[0]; }
-            const T& front() const noexcept { return m_data[0]; }
-            T& back() noexcept { return m_data[m_size - 1]; }
-            const T& back() const noexcept { return m_data[m_size - 1]; }
+        T& operator[](const size_t index) noexcept { return m_data[index]; }
+        const T& operator[](const size_t index) const noexcept { return m_data[index]; }
+        T& at(const size_t index);
+        const T& at(const size_t index) const;
+        T& front() noexcept { return m_data[0]; }
+        const T& front() const noexcept { return m_data[0]; }
+        T& back() noexcept { return m_data[m_size - 1]; }
+        const T& back() const noexcept { return m_data[m_size - 1]; }
 
-            Vector(const Vector& other);
-            Vector& operator=(const Vector& other);
+        Vector(const Vector& other);
+        Vector& operator=(const Vector& other);
 
-            Vector(Vector&& other) noexcept;
-            Vector& operator=(Vector&& other) noexcept;
+        Vector(Vector&& other) noexcept;
+        Vector& operator=(Vector&& other) noexcept;
 
-            ~Vector() { delete[] m_data; }
+        ~Vector() { delete[] m_data; }
 
-        private:
-            T* m_data{ nullptr };
-            size_t m_size{ 0 };
-            size_t m_capacity{ 0 };
-            static constexpr size_t m_INIT_CAP = 10;
+    private:
+        T* m_data{ nullptr };
+        size_t m_size{ 0 };
+        size_t m_capacity{ 0 };
+        static constexpr size_t m_INIT_CAP = 10;
     };
 
     template<typename T>

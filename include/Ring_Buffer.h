@@ -7,26 +7,26 @@ namespace my_std {
 
     template<typename T, size_t N>
     class Ring_Buffer {
-        public:
-            Ring_Buffer() = default;
+    public:
+        Ring_Buffer() = default;
 
-            void try_push(const T& value);
-            void try_push(T&& value);
-            void push(const T& value);
-            void push(T&& value);
-            void pop() noexcept;
+        void try_push(const T& value);
+        void try_push(T&& value);
+        void push(const T& value);
+        void push(T&& value);
+        void pop() noexcept;
 
-            inline bool empty() const noexcept { return m_size == 0; }
-            inline bool full() const noexcept { return m_size == N; }
-            inline size_t size() const noexcept { return m_size; }
-            inline const T& front() const noexcept { return m_data[m_front]; }
-            inline const T& back() const noexcept { return m_data[(m_back + N - 1) % N]; }
+        inline bool empty() const noexcept { return m_size == 0; }
+        inline bool full() const noexcept { return m_size == N; }
+        inline size_t size() const noexcept { return m_size; }
+        inline const T& front() const noexcept { return m_data[m_front]; }
+        inline const T& back() const noexcept { return m_data[(m_back + N - 1) % N]; }
 
-        private:
-            T m_data[N];
-            size_t m_size = 0;
-            size_t m_front = 0;
-            size_t m_back = 0;
+    private:
+        T m_data[N];
+        size_t m_size = 0;
+        size_t m_front = 0;
+        size_t m_back = 0;
     };
 
     template<typename T, size_t N>
