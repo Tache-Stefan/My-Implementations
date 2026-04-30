@@ -42,6 +42,7 @@ add_executable(tests
     tests/List_test.cpp
     tests/LF_Ring_Buffer_test.cpp
     tests/Unique_Ptr_test.cpp
+    tests/Unordered_Map_test.cpp
     )
 target_link_libraries(tests PRIVATE MyImplementations GTest::gtest_main)
 
